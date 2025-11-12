@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Learning Activity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: url('images/header_bg.jpg');
+            /* background-repeat: no-repeat; */
+            /* background-clip: border-box;  */
+            background-size: contain;
+            padding: 15px 25px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .unit-title {
+            font-size: 26px;
+            color: white;
+            font-weight: bold;
+            font-family: "Arial Rounded MT Bold", "Arial Rounded MT", sans-serif;
+            -webkit-text-stroke: 1.5px #022B60;
+        }
+
+        /* Think About It Badge */
+        .think-badge {
+            /* background: linear-gradient(135deg, #1e5fa8 0%, #2b7fd6 100%); */
+            color: white;
+            /* padding: 10px 30px; */
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            /* box-shadow: 0 4px 15px rgba(0,0,0,0.2); */
+            /* width: fit-content; */
+        }
+        .think-badge img{
+            width: inherit;
+            height: 100%;
+        }
+
+        .star-icon {
+            position: relative;
+            background: #1e5fa8;
+            color: #1e5fa8;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .star-icon .letter {
+            position: absolute;
+            top: 57%;
+            left: 49%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #1e5fa8;
+            font-weight: 900;
+        }
+
+        /* Main Instruction */
+        .instruction {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Main Content Area - 3 Column Layout */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            min-height: 0;
+        }
+
+        /* Column 1: Drop Zones */
+        .drop-zones-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            overflow-y: auto;
+        }
+
+        .drop-zones-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .drop-zones-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .drop-zones-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .drop-zone-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .drop-item {
+            display: grid;
+            grid-template-columns: auto 1fr 140px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(255, 82, 82, 0.3);
+        }
+
+        .audio-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 82, 82, 0.5);
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        .sport-label {
+            background: linear-gradient(135deg, #6b4c9a 0%, #8b5fc9 100%);
+            color: #FFF200;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .drop-zone {
+            width: 130px;
+            height: 120px;
+            border: 3px dashed #ccc;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4a90e2;
+            background: #f0f7ff;
+            transform: scale(1.02);
+        }
+
+        .drop-zone.correct {
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            border-style: solid;
+        }
+
+        .drop-placeholder {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .feedback {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .feedback.correct {
+            color: #28a745;
+        }
+
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+
+        /* Column 2: Draggable Images */
+        .images-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .images-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .images-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .images-section::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .images-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .draggable-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            justify-items: center;
+        }
+
+        .draggable-item {
+            cursor: move;
+            transition: all 0.3s;
+        }
+
+        .draggable-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .draggable-item.dragging {
+            opacity: 0.5;
+        }
+
+        .sport-card {
+            width: 120px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 3px solid transparent;
+        }
+
+        .sport-card.basketball { border-color: #ff6b35; }
+        .sport-card.football { border-color: #004e89; }
+        .sport-card.skiing { border-color: #00a896; }
+        .sport-card.swimming { border-color: #4cc9f0; }
+        .sport-card.gymnastics { border-color: #f72585; }
+        .sport-card.boxing { border-color: #7209b7; }
+
+        .sport-image {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+        }
+
+        .sport-image.basketball { background: linear-gradient(135deg, #ffe0d4 0%, #ffc4a8 100%); }
+        .sport-image.football { background: linear-gradient(135deg, #d4e6f5 0%, #b8d8f0 100%); }
+        .sport-image.skiing { background: linear-gradient(135deg, #d4f5f0 0%, #b8ede5 100%); }
+        .sport-image.swimming { background: linear-gradient(135deg, #d4f0f7 0%, #b8e6f3 100%); }
+        .sport-image.gymnastics { background: linear-gradient(135deg, #fdd4e8 0%, #fbb8db 100%); }
+        .sport-image.boxing { background: linear-gradient(135deg, #e8d4f5 0%, #d9b8ed 100%); }
+
+        /* Column 3: Questions */
+        .questions-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .questions-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .questions-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .questions-section::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .question-icon {
+            /* background: #ff4757; */
+            color: white;
+           
+            /* border-radius: 50%; */
+            display: flex;
+            /* align-items: center; */
+            justify-content: center;
+            /* font-size: 24px; */
+            font-weight: bold;
+            margin: 0 auto 10px;
+            /* box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3); */
+        }
+
+        .questions-title {
+            font-size: 14px;
+            color: #6451A2;
+            margin-bottom: 15px;
+            /* text-align: center; */
+        }
+
+        .questions-list {
+            list-style: none;
+        }
+
+        .questions-list li {
+            margin-bottom: 15px;
+            color: #6451A2;
+            font-size: 13px;
+        }
+
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .question-text {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .answer-box {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .answer-box:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 15px;
+        }
+
+        .score {
+            font-size: 18px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffd93d 0%, #ffb93d 100%);
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 15px rgba(255, 185, 61, 0.4);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 15px rgba(255, 82, 82, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 82, 82, 0.5);
+        }
+
+        .btn-toggle {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        }
+
+        .btn-toggle:hover {
+            box-shadow: 0 5px 20px rgba(74, 144, 226, 0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+        }
+
+        /* Victory Animation Styles */
+        #victoryOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .victory-content {
+            text-align: center;
+            color: white;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .victory-content .trophy {
+            font-size: 120px;
+            animation: rotate 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .victory-content h1 {
+            font-size: 48px;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .victory-content p {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        .confetti {
+            font-size: 40px;
+            margin-top: 30px;
+            animation: confettiFall 3s ease-out infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="unit-title" id="unitTitle"></div>
+        </div>
+
+        <!-- Think About It Badge -->
+        <div class="think-badge">
+            <!-- <div class="star-icon">⭐<span class="letter">A</span></div>
+            <span id="badgeTitle"></span> -->
+            <img src="images/think_badge.jpg" alt="">
+        </div>
+
+        <!-- Main Instruction -->
+        <div class="instruction" id="mainInstruction"></div>
+
+        <!-- Main Content - 3 Columns -->
+        <div class="main-content">
+            <!-- Column 1: Drop Zones -->
+            <div class="drop-zones-container">
+                <div class="drop-zone-title">Match the Sports</div>
+                <div id="dropZones"></div>
+            </div>
+
+            <!-- Column 2: Draggable Images -->
+            <div class="images-section">
+                <div class="images-title">🎯 Drag the sports</div>
+                <div class="draggable-images" id="imagesContainer"></div>
+            </div>
+
+            <!-- Column 3: Questions -->
+            <div class="questions-section">
+                <div class="question-icon"><img src="images/question_icon.jpg" alt=""><div class="questions-title" id="questionsDesc"></div></div>
+                
+                <ul class="questions-list" id="questionsList"></ul>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
+            <div class="score" id="scoreDisplay">
+                🌟 Score: 0 / <span id="totalItems">0</span> 🌟
+            </div>
+            <div class="controls">
+                <button class="btn btn-toggle" onclick="toggleRevert()">
+                    <span id="revertButtonText">Revert: ON</span>
+                </button>
+                <button class="btn" onclick="resetGame()">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        
+        const CONFIG = {
+            header: {
+                unitTitle: "Unit 1: I Am Special"
+            },
+            
+            badgeTitle: "Think About It",
+            
+            mainInstruction: "1. Look, read, and say.",
+            
+            questions: {
+                description: "Talk to your classmate. Ask and answer the questions.",
+                items: [
+                    "What sports are the children doing?",
+                    "Are they playing the same sport?",
+                    "What is your favorite sport?"
+                ]
+            },
+            
+            items: [
+                { 
+                    name: 'basketball', 
+                    image: 'images/basketball.jpg',
+                    color: '#ff6b35' 
+                },
+                { 
+                    name: 'football', 
+                    image: 'images/football.jpg',
+                    color: '#004e89' 
+                },
+                { 
+                    name: 'skiing', 
+                    image: 'images/skiing.jpg',
+                    color: '#00a896' 
+                },
+                { 
+                    name: 'swimming', 
+                    image: 'images/swimming.jpg',
+                    color: '#4cc9f0' 
+                },
+                { 
+                    name: 'gymnastics', 
+                    image: 'images/gymnastics.jpg',
+                    color: '#f72585' 
+                },
+                { 
+                    name: 'boxing', 
+                    image: 'images/boxing.jpg',
+                    color: '#7209b7' 
+                }
+            ]
+        };
+
+        // ============================================
+        // APPLICATION CODE
+        // ============================================
+
+        let correctAnswers = 0;
+        let revertOnWrong = true;
+        let victoryTimeout = null;
+        let clapAudio = null;
+
+        function initializePage() {
+            document.getElementById('unitTitle').textContent = CONFIG.header.unitTitle;
+            // document.getElementById('badgeTitle').textContent = CONFIG.badgeTitle;
+            document.getElementById('mainInstruction').textContent = CONFIG.mainInstruction;
+            document.getElementById('questionsDesc').textContent = CONFIG.questions.description;
+            
+            const questionsList = CONFIG.questions.items.map((q, index) => `
+                <li>
+                    <span class="question-number">${index + 1}. ${q}</span>
+                    <!--<span class="question-text">${q}</span>-->
+                    <input type="text" class="answer-box" placeholder="Type your answer..." />
+                </li>
+            `).join('');
+            document.getElementById('questionsList').innerHTML = questionsList;
+            
+            document.getElementById('totalItems').textContent = CONFIG.items.length;
+            
+            generateDropZones();
+            initGame();
+        }
+
+        function generateDropZones() {
+            const dropZonesContainer = document.getElementById('dropZones');
+            dropZonesContainer.innerHTML = '';
+
+            CONFIG.items.forEach(item => {
+                const dropItem = document.createElement('div');
+                dropItem.className = 'drop-item';
+                dropItem.innerHTML = `
+                    <button class="audio-btn" onclick="playAudio('${item.name}')" title="Play audio">
+                        🔊
+                    </button>
+                    <div class="sport-label">
+                        ${item.name}
+                    </div>
+                    <div class="drop-zone" data-sport="${item.name}">
+                        <div class="drop-placeholder">Drop</div>
+                    </div>
+                `;
+                dropZonesContainer.appendChild(dropItem);
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function initGame() {
+            const container = document.getElementById('imagesContainer');
+            const shuffled = [...CONFIG.items].sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = '';
+            shuffled.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'draggable-item';
+                itemElement.draggable = true;
+                itemElement.dataset.sport = item.name;
+                
+                itemElement.innerHTML = `
+                    <div class="sport-card ${item.name}">
+                        <div class="sport-image ${item.name}" style="background-image: url('${item.image}')"></div>
+                    </div>
+                `;
+                
+                itemElement.addEventListener('dragstart', handleDragStart);
+                itemElement.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(itemElement);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.sport);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.target.closest('.drop-zone').classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.closest('.drop-zone').classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            const draggedSport = e.dataTransfer.getData('text/plain');
+            const dropZone = e.target.closest('.drop-zone');
+            const targetSport = dropZone.dataset.sport;
+
+            dropZone.classList.remove('drag-over');
+
+            const draggedElement = document.querySelector(`.draggable-item[data-sport="${draggedSport}"]`);
+            
+            if (!draggedElement) {
+                return false;
+            }
+            
+            dropZone.innerHTML = '';
+
+            const clone = draggedElement.querySelector('.sport-card').cloneNode(true);
+            clone.style.margin = '0 auto';
+            dropZone.appendChild(clone);
+
+            draggedElement.remove();
+
+            checkAnswer(dropZone, draggedSport, targetSport);
+
+            return false;
+        }
+
+        function checkAnswer(dropZone, draggedSport, targetSport) {
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback';
+
+            if (draggedSport === targetSport) {
+                dropZone.classList.add('correct');
+                dropZone.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                feedback.textContent = '✓';
+                correctAnswers++;
+            } else {
+                dropZone.classList.add('incorrect');
+                dropZone.classList.remove('correct');
+                feedback.classList.add('incorrect');
+                feedback.textContent = '✗';
+                
+                if (revertOnWrong) {
+                    setTimeout(() => {
+                        returnImageToPanel(draggedSport);
+                        dropZone.innerHTML = '<div class="drop-placeholder">Drop</div>';
+                        dropZone.classList.remove('incorrect');
+                    }, 1500);
+                }
+            }
+
+            dropZone.appendChild(feedback);
+            updateScore();
+        }
+
+        function returnImageToPanel(itemName) {
+            const item = CONFIG.items.find(s => s.name === itemName);
+            const container = document.getElementById('imagesContainer');
+            
+            const itemElement = document.createElement('div');
+            itemElement.className = 'draggable-item';
+            itemElement.draggable = true;
+            itemElement.dataset.sport = item.name;
+            
+            itemElement.innerHTML = `
+                <div class="sport-card ${item.name}">
+                    <div class="sport-image ${item.name}" style="background-image: url('${item.image}')"></div>
+                </div>
+            `;
+            
+            itemElement.addEventListener('dragstart', handleDragStart);
+            itemElement.addEventListener('dragend', handleDragEnd);
+            
+            container.appendChild(itemElement);
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').innerHTML = `🌟 Score: ${correctAnswers} / ${CONFIG.items.length} 🌟`;
+            
+            if (correctAnswers === CONFIG.items.length) {
+                setTimeout(() => {
+                    playVictoryAnimation();
+                }, 500);
+            }
+        }
+
+        function playVictoryAnimation() {
+            // Play clap sound
+            playClapSound();
+            
+            // Create victory overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'victoryOverlay';
+            overlay.innerHTML = `
+                <div class="victory-content">
+                    <div class="trophy">🏆</div>
+                    <h1>Congratulations!</h1>
+                    <p>You matched all the sports correctly!</p>
+                    <div class="confetti">🎉🎊✨🌟⭐💫🎯</div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            // Remove overlay after 3 seconds
+            victoryTimeout = setTimeout(() => {
+                stopVictory();
+            }, 3000);
+        }
+
+        function playClapSound() {
+            // Create clap sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create multiple claps
+            for (let i = 0; i < 8; i++) {
+                const time = audioContext.currentTime + (i * 0.35);
+                
+                // White noise for clap
+                const bufferSize = audioContext.sampleRate * 0.1;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let j = 0; j < bufferSize; j++) {
+                    data[j] = Math.random() * 2 - 1;
+                }
+                
+                const noise = audioContext.createBufferSource();
+                noise.buffer = buffer;
+                
+                const filter = audioContext.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 1000;
+                
+                const gainNode = audioContext.createGain();
+                gainNode.gain.setValueAtTime(0.3, time);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+                
+                noise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                noise.start(time);
+                noise.stop(time + 0.1);
+            }
+            
+            // Store context to stop if needed
+            clapAudio = audioContext;
+        }
+
+        function stopVictory() {
+            // Remove overlay
+            const overlay = document.getElementById('victoryOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+            
+            // Clear timeout
+            if (victoryTimeout) {
+                clearTimeout(victoryTimeout);
+                victoryTimeout = null;
+            }
+            
+            // Stop audio context
+            if (clapAudio) {
+                clapAudio.close();
+                clapAudio = null;
+            }
+        }
+
+        function playAudio(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleRevert() {
+            revertOnWrong = !revertOnWrong;
+            document.getElementById('revertButtonText').textContent = `Revert: ${revertOnWrong ? 'ON' : 'OFF'}`;
+        }
+
+        function resetGame() {
+            // Stop victory animation and sound if playing
+            stopVictory();
+            
+            correctAnswers = 0;
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.innerHTML = '<div class="drop-placeholder">Drop</div>';
+                zone.classList.remove('correct', 'incorrect');
+            });
+            updateScore();
+            initGame();
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+    
+</body>
+</html>
